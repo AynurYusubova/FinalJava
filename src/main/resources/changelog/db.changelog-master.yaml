@@ -1,0 +1,184 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-uni-table
+      author: Aynur Yusubova
+      changes:
+        - createTable:
+            tableName: uni
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: faculty
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+
+
+  - changeSet:
+      id: create-student-table
+      author: Aynur Yusubova
+      changes:
+        - createTable:
+            tableName: student
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birthday
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: course
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: grade
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: annual_free
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: drop-grade-column
+      author: Aynur Yusubova
+      changes:
+        - dropColumn:
+            columnName: grade
+            tableName: student
+
+
+  - changeSet:
+      id: create-teacher-table
+      author: Aynur Yusubova
+      changes:
+        - createTable:
+            tableName: teacher
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: create-subject-table
+      author: Aynur Yusubova
+      changes:
+        - createTable:
+            tableName: subject
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: credits
+                  type: INT
+                  constraints:
+                    nullable: false
+
+
+  - changeSet:
+      id: add-uni-id-to-student
+      author: Aynur Yusubova
+      changes:
+        - addColumn:
+            tableName: student
+            columns:
+              - column:
+                  name: uni_id
+                  type: INT
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+     id: add-teacher-id-to-subject
+     author: Aynur Yusubova
+     changes:
+       - addColumn:
+           tableName: subject
+           columns:
+             - column:
+                 name: teacher_id
+                 type: INT
+                 constraints:
+                   nullable: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

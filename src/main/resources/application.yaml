@@ -1,0 +1,27 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /FinalJava
+
+spring:
+
+  datasource:
+    username: root
+    password: root123
+    url: jdbc:mysql://localhost:3306/finaljava
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+
+  liquibase:
+    change-log: classpath:changelog/db.changelog-master.yaml
+    enabled: true
+    database-change-log-table: DATABASECHANGELOG
+    database-change-log-lock-table: DATABASECHANGELOGLOCK
+
+
+
+
