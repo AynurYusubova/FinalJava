@@ -13,35 +13,40 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/apiteac")
+@RequestMapping("/teachers")
 public class TeacherController {
 
     @Autowired
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
 
-    @GetMapping("/get")
-    List<TeacherAllResponse> getTeachers() {
+    public TeacherController(TeacherService teacherService) {
+        this.teacherService = teacherService;
+    }
+
+
+    @GetMapping("/teachers")
+    public List<TeacherAllResponse> getTeachers() {
         return teacherService.getTeachers();
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/teachers/{id}")
     public TeacherGetResponse getTeacherById(@PathVariable int id){
         return teacherService.getTeacherById(id);
     }
 
 
-    @PostMapping("/post")
+    @PostMapping("/teachers")
     public TeacherPostResponse postTeacher(@RequestBody TeacherPostRequest teacherPostRequest){
         return teacherService.postTeacher(teacherPostRequest);
     }
 
 
-    @PutMapping("/put/{id}")
+    @PutMapping("/teachers/{id}")
     public TeacherPutResponse putTeacher(@PathVariable(name="id") int id, @RequestBody TeacherPutRequest teacherPutRequest){
         return teacherService.putTeacher(id,teacherPutRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/teachers/{id}")
     public void deleteTeacher(@PathVariable(name="id") int id){
         teacherService.deleteTeacher(id);
     }

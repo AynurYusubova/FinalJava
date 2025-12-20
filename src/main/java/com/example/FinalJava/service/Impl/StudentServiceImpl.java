@@ -1,5 +1,4 @@
 package com.example.FinalJava.service.Impl;
-
 import com.example.FinalJava.dto.req.StudentPostRequest;
 import com.example.FinalJava.dto.req.StudentPutRequest;
 import com.example.FinalJava.dto.res.StudentAllResponse;
@@ -8,31 +7,34 @@ import com.example.FinalJava.dto.res.StudentPostResponse;
 import com.example.FinalJava.dto.res.StudentPutResponse;
 import com.example.FinalJava.entity.StudentEntity;
 import com.example.FinalJava.entity.UniEntity;
+import com.example.FinalJava.exception.NotFoundException;
 import com.example.FinalJava.mapper.StudentMapper;
 import com.example.FinalJava.repostory.StudentRepostory;
 import com.example.FinalJava.repostory.UniRepostory;
 import com.example.FinalJava.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 
+
+
 @Service
 @Slf4j
 public class StudentServiceImpl implements StudentService {
-    @Autowired
-    private StudentRepostory studentRepostory;
 
-    @Autowired
-    private StudentMapper studentMapper;
+    private final StudentRepostory studentRepostory;
+    private final StudentMapper studentMapper;
+    private final UniRepostory uniRepostory;
 
-
-    @Autowired
-    private UniRepostory uniRepostory;
-
-
+    public StudentServiceImpl(StudentRepostory studentRepostory,
+                              StudentMapper studentMapper,
+                              UniRepostory uniRepostory) {
+        this.studentRepostory = studentRepostory;
+        this.studentMapper = studentMapper;
+        this.uniRepostory = uniRepostory;
+    }
 
     @Override
     public List<StudentAllResponse> getStudents() {
@@ -42,87 +44,49 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentGetResponse getStudent(int id) {
-        Optional<StudentEntity> studentEntity = studentRepostory.findById(id);
+        StudentEntity entity = studentRepostory.findById(id)
+                .orElseThrow(() -> new NotFoundException("Tələbə tapılmadı!"));
 
-        if(studentEntity.isEmpty()){
-            return StudentGetResponse.builder()
-                    .message("ID " + id + " üçün tələbə tapılmadı!")
-                    .build();
-        }
+        StudentGetResponse response = studentMapper.toGetResponse(entity);
+        response.setMessage("ID " + id + " məlumat tapıldı!");
 
-        StudentEntity studentEntity1 = studentEntity.get();
-        return StudentGetResponse.builder()
-                .name(studentEntity1.getName())
-                .surname(studentEntity1.getSurname())
-                .email(studentEntity1.getEmail())
-                .annualFree(studentEntity1.getAnnualFree())
-                .birthday(studentEntity1.getBirthday())
-                .course(studentEntity1.getCourse())
-                .message("ID" + id + " məlumat tapıldı!")
-                .build();
+        return response;
 
     }
 
     @Override
     public StudentPostResponse addStudent(StudentPostRequest studentPostRequest) {
-        StudentEntity studentEntity=new StudentEntity();
-        studentEntity.setName(studentPostRequest.getName());
-        studentEntity.setSurname(studentPostRequest.getSurname());
-        studentEntity.setEmail(studentPostRequest.getEmail());
-        studentEntity.setAnnualFree(studentPostRequest.getAnnualFree());
-        studentEntity.setBirthday(studentPostRequest.getBirthday());
-        studentEntity.setCourse(studentPostRequest.getCourse());
 
+        UniEntity uni = uniRepostory.findById(studentPostRequest.getUniId())
+                .orElseThrow(() -> new NotFoundException("Universitet tapılmadı!"));
 
-        UniEntity uni = uniRepostory.findById(studentPostRequest.getUniId()).orElse(null);
-        studentEntity.setUni(uni);
+        StudentPostResponse response1=studentMapper.toPostResponse(uni);
+        response1.setMessage("Məlumat əlavə olundu!");
 
-
-        studentRepostory.save(studentEntity);
-
-
-        return StudentPostResponse.builder()
-                .name(studentEntity.getName())
-                .surname(studentEntity.getSurname())
-                .email(studentEntity.getEmail())
-                .annualFree(studentEntity.getAnnualFree())
-                .birthday(studentEntity.getBirthday())
-                .course(studentEntity.getCourse())
-                .message("Məlumat uğurla əlavə olundu!")
-                .build();
-
+        return response1;
     }
+
 
     @Override
     public StudentPutResponse updateStudent(int id, StudentPutRequest studentPutRequest) {
-        Optional<StudentEntity> studentEntit = studentRepostory.findById(id);
+        StudentEntity entity = studentRepostory.findById(id)
+                .orElseThrow(()-> new NotFoundException("Məlumat tapılmadı!"));
 
-        if(studentEntit.isEmpty()){
-            return StudentPutResponse.builder()
-                    .message("ID " + id + " üçün tələbə tapılmadı!")
-                    .build();
-        }
+                StudentPutResponse response2=studentMapper.toPutResponse(entity);
+                response2.setMessage("Məlumat uğurla dəyişdirildi!");
 
-        StudentEntity studentEntity1 = studentEntit.get();
-        return StudentPutResponse.builder()
-                .name(studentEntity1.getName())
-                .surname(studentEntity1.getSurname())
-                .email(studentEntity1.getEmail())
-                .annualFree(studentEntity1.getAnnualFree())
-                .birthday(studentEntity1.getBirthday())
-                .course(studentEntity1.getCourse())
-                .message("Məlumat uğurla dəyişdirildi!")
-                .build();
+                return response2;
     }
 
     @Override
     public void deleteStudent(int id) {
         Optional<StudentEntity> student = studentRepostory.findById(id);
         if(student.isEmpty()){
-            System.out.println("ID " + id + " üçün tələbə tapılmadı!");
+              log.info("ID" + id + " üçün tələbə tapılmadı!" );
             return;
         }
-        System.out.println("ID " + id + "məlumat silindi!" );
+        log.info("ID " + id + "məlumat silindi!" );
         studentRepostory.delete(student.get());
     }
+
 }

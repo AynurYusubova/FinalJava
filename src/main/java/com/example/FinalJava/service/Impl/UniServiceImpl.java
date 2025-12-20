@@ -6,6 +6,7 @@ import com.example.FinalJava.dto.res.UniGetResponse;
 import com.example.FinalJava.dto.res.UniPostResponse;
 import com.example.FinalJava.dto.res.UniPutResponse;
 import com.example.FinalJava.entity.UniEntity;
+import com.example.FinalJava.exception.NotFoundException;
 import com.example.FinalJava.mapper.UniMapper;
 import com.example.FinalJava.repostory.UniRepostory;
 import com.example.FinalJava.service.UniService;
@@ -18,13 +19,14 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class UniServiceImpl implements UniService {
-    @Autowired
-    private UniRepostory uniRepostory;
 
-    @Autowired
-    private UniMapper uniMapper;
+    private final UniRepostory uniRepostory;
+    private final UniMapper uniMapper;
 
-
+    public UniServiceImpl(UniRepostory uniRepostory, UniMapper uniMapper) {
+        this.uniRepostory = uniRepostory;
+        this.uniMapper = uniMapper;
+    }
 
     @Override
     public List<UniAllResponse> getAlluni() {
@@ -35,20 +37,12 @@ public class UniServiceImpl implements UniService {
 
     @Override
     public UniGetResponse getuni(int id) {
-        Optional<UniEntity> uniEntity = uniRepostory.findById(id);
+        UniEntity entity = uniRepostory.findById(id)
+                .orElseThrow(()->new NotFoundException("Universitet tapılmadı!"));
 
-        if (uniEntity.isEmpty()) {
-            return UniGetResponse.builder()
-                    .message("ID " + id + " üçün universitet tapılmadı!")
-                    .build();
-        }
-
-        UniEntity uni = uniEntity.get();
-        return UniGetResponse.builder()
-                .name(uni.getName())
-                .faculty(uni.getFaculty())
-                .message("ID " + id + "üçün universitet tapıldı!")
-                .build();
+        UniGetResponse response=uniMapper.toGetResponse(entity);
+        response.setMessage("ID " + id + " üçün universitet tapılmadı!");
+        return response;
     }
 
 
@@ -67,24 +61,13 @@ public class UniServiceImpl implements UniService {
 
     @Override
     public UniPutResponse updateuni(int id, UniPutRequest uniPutRequest) {
-        Optional <UniEntity> uniEntity1=uniRepostory.findById(id);
+        UniEntity entity=uniRepostory.findById(id)
+                .orElseThrow(()-> new NotFoundException("Məlumat tapılmadı!"));
 
-        if(uniEntity1.isEmpty()){
-            return UniPutResponse.builder().
-                    message("ID " + id + " üçün universitet tapılmadı!")
-                    .build();
-        }
+        UniPutResponse response=uniMapper.toPutResponse(entity);
+        response.setMessage("Məlumat uğurla dəyişdirildi!");
 
-        UniEntity uniEntity=uniEntity1.get();
-        uniEntity.setName(uniPutRequest.getName());
-        uniEntity.setFaculty(uniPutRequest.getFaculty());
-        uniRepostory.save(uniEntity);
-        return UniPutResponse.builder().
-                name(uniPutRequest.getName())
-                .faculty(uniEntity.getFaculty())
-                .message("Məlumat uğurla dəyişdirildi!")
-                .build();
-
+        return response;
     }
 
     @Override

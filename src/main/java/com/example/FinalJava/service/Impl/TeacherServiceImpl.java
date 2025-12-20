@@ -4,6 +4,7 @@ import com.example.FinalJava.dto.req.TeacherPostRequest;
 import com.example.FinalJava.dto.req.TeacherPutRequest;
 import com.example.FinalJava.dto.res.*;
 import com.example.FinalJava.entity.TeacherEntity;
+import com.example.FinalJava.exception.NotFoundException;
 import com.example.FinalJava.mapper.TeacherMapper;
 import com.example.FinalJava.repostory.TeacherRepostory;
 import com.example.FinalJava.service.TeacherService;
@@ -19,13 +20,13 @@ import java.util.Optional;
 @Slf4j
 public class TeacherServiceImpl implements TeacherService {
 
-    @Autowired
-    private TeacherRepostory teacherRepostory;
+    private final TeacherRepostory teacherRepostory;
+    private final TeacherMapper teacherMapper;
 
-    @Autowired
-    private TeacherMapper teacherMapper;
-
-
+    public TeacherServiceImpl(TeacherRepostory teacherRepostory, TeacherMapper teacherMapper) {
+        this.teacherRepostory = teacherRepostory;
+        this.teacherMapper = teacherMapper;
+    }
 
     @Override
     public List<TeacherAllResponse> getTeachers() {
@@ -35,20 +36,12 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherGetResponse getTeacherById(int id) {
-        Optional<TeacherEntity> teacherEntity = teacherRepostory.findById(id);
+        TeacherEntity entity = teacherRepostory.findById(id)
+                .orElseThrow(()->new NotFoundException("Müəllim tapılmadı!"));
 
-        if(teacherEntity.isEmpty()){
-            return TeacherGetResponse.builder()
-                    .message("ID " + id + " üçün müəllim tapılmadı!")
-                    .build();
-        }
-
-        TeacherEntity teacherEntity1 = teacherEntity.get();
-        return TeacherGetResponse.builder()
-                .name(teacherEntity1.getName())
-                .surname(teacherEntity1.getSurname())
-                .message("ID" + id + " məlumat tapıldı!")
-                .build();
+        TeacherGetResponse response=teacherMapper.toGetResponse(entity);
+        response.setMessage("ID " + id + " üçün müəllim tapılmadı!");
+        return response;
 
       }
 
@@ -67,20 +60,13 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherPutResponse putTeacher(int id, TeacherPutRequest teacherPutRequest) {
-        Optional<TeacherEntity> teacherEntit = teacherRepostory.findById(id);
+        TeacherEntity entity = teacherRepostory.findById(id)
+                .orElseThrow(()->new NotFoundException("Məlumat tapılmadı!"));
 
-        if(teacherEntit.isEmpty()){
-            return TeacherPutResponse.builder()
-                    .message("ID " + id + " üçün müəllim tapılmadı!")
-                    .build();
-        }
+        TeacherPutResponse response=teacherMapper.toPutResponse(entity);
+        response.setMessage("Məlumat uğurla dəyişdirildi!");
 
-        TeacherEntity teacherEntity1 = teacherEntit.get();
-        return TeacherPutResponse.builder()
-                .name(teacherEntity1.getName())
-                .surname(teacherEntity1.getSurname())
-                .message("Məlumat uğurla dəyişdirildi!")
-                .build();
+        return response;
     }
 
     @Override

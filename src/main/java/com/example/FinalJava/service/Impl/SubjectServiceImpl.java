@@ -1,5 +1,4 @@
 package com.example.FinalJava.service.Impl;
-
 import com.example.FinalJava.dto.req.SubjectPostRequest;
 import com.example.FinalJava.dto.req.SubjectPutRequest;
 import com.example.FinalJava.dto.res.SubjectAllResponse;
@@ -8,6 +7,7 @@ import com.example.FinalJava.dto.res.SubjectPostResponse;
 import com.example.FinalJava.dto.res.SubjectPutResponse;
 import com.example.FinalJava.entity.SubjectEntity;
 import com.example.FinalJava.entity.TeacherEntity;
+import com.example.FinalJava.exception.NotFoundException;
 import com.example.FinalJava.mapper.SubjectMapper;
 import com.example.FinalJava.repostory.SubjectRepostory;
 import com.example.FinalJava.repostory.TeacherRepostory;
@@ -15,8 +15,6 @@ import com.example.FinalJava.service.SubjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -24,15 +22,15 @@ import java.util.Optional;
 @Slf4j
 public class SubjectServiceImpl implements SubjectService {
 
-    @Autowired
-    private SubjectRepostory subjectRepostory;
+    private final SubjectRepostory subjectRepostory;
+    private final SubjectMapper subjectMapper;
+    private final TeacherRepostory teacherRepostory;
 
-    @Autowired
-    private SubjectMapper subjectMapper;
-
-    @Autowired
-    private TeacherRepostory teacherRepostory;
-
+    public SubjectServiceImpl(SubjectRepostory subjectRepostory, SubjectMapper subjectMapper, TeacherRepostory teacherRepostory) {
+        this.subjectRepostory = subjectRepostory;
+        this.subjectMapper = subjectMapper;
+        this.teacherRepostory = teacherRepostory;
+    }
 
     @Override
     public List<SubjectAllResponse> getSubjects() {
@@ -42,55 +40,37 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public SubjectGetResponse getSubject(int id) {
-        Optional<SubjectEntity> subjectEntity=subjectRepostory.findById(id);
+        SubjectEntity entity=subjectRepostory.findById(id)
+                .orElseThrow(()->new NotFoundException("Fənn tapılmadı!"));
 
-        if(subjectEntity.isEmpty()){
-            return SubjectGetResponse.builder()
-                    .message("ID " + id + " üçün fənn tapılmadı!")
-            .build();
-        }
+         SubjectGetResponse response=subjectMapper.toGetResponse(entity);
+         response.setMessage("Id " + id + "məlumat tapıldı!");
 
-        SubjectEntity subjectEntity1=subjectEntity.get();
-        return SubjectGetResponse.builder()
-                .name(subjectEntity1.getName())
-                 .credits(subjectEntity1.getCredits())
-                .message("ID" + id + " məlumat tapıldı!")
-                .build();
+         return response;
     }
 
     @Override
     public SubjectPostResponse addSubject(SubjectPostRequest subjectPostRequest) {
-        SubjectEntity subjectEntity=new SubjectEntity();
-        subjectEntity.setName(subjectPostRequest.getName());
-        subjectEntity.setCredits(subjectPostRequest.getCredits());
+        TeacherEntity teacher =teacherRepostory.findById(subjectPostRequest.getTeacherId())
+                .orElseThrow(()->new NotFoundException("Müəllim tapılmadı!"));
 
-        TeacherEntity teacher =teacherRepostory.findById(subjectPostRequest.getTeacherId()).orElse(null);
-        subjectEntity.setTeacher(teacher);
+        SubjectPostResponse response=subjectMapper.toPostResponse(teacher);
+        response.setMessage("Məlumat əlavə olundu!");
 
-        subjectRepostory.save(subjectEntity);
-        return SubjectPostResponse.builder()
-                .name(subjectEntity.getName())
-                .credits(subjectEntity.getCredits())
-                .message("Məlumat uğurla əlavə olundu!")
-                .build();
+        return response;
+
     }
 
     @Override
     public SubjectPutResponse updateSubject(int id, SubjectPutRequest subjectPutRequest) {
-        Optional<SubjectEntity> subjectEntity=subjectRepostory.findById(id);
+        SubjectEntity entity=subjectRepostory.findById(id)
+                .orElseThrow(()->new NotFoundException("Məlumat tapılmadı!"));
 
-        if(subjectEntity.isEmpty()){
-            return SubjectPutResponse.builder()
-                    .message("ID " + id + " üçün fənn tapılmadı!")
-                    .build();
-        }
 
-        SubjectEntity subjectEntity1=subjectEntity.get();
-        return SubjectPutResponse.builder()
-                .name(subjectEntity1.getName())
-                .credits(subjectEntity1.getCredits())
-                .message("Məlumat uğurla dəyişdirildi!")
-                .build();
+        SubjectPutResponse response=subjectMapper.toPutResponse(entity);
+        response.setMessage("Məlumat uğurla dəyişdirildi!");
+
+        return response;
     }
 
     @Override

@@ -11,33 +11,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/universites")
 public class UniController {
     @Autowired
-    private UniService uniService;
+    private final  UniService uniService;
 
-    @GetMapping("/get")
+    public UniController(UniService uniService) {
+        this.uniService = uniService;
+    }
+
+
+    @GetMapping("/universites")
     public List<UniAllResponse> getAlluni(){
         return uniService.getAlluni();
     }
 
-    @GetMapping("/getmap/{id}")
+    @GetMapping("/universites/{id}")
     public UniGetResponse getuni(@PathVariable int id){
         return uniService.getuni(id);
     }
 
-    @PostMapping("/post")
+    @PostMapping("/universites")
     public UniPostResponse adduni(@RequestBody UniPostRequest uniPostRequest){
         return uniService.adduni(uniPostRequest);
     }
 
-    @PutMapping("/put/{id}")
+    @PutMapping("/universites/{id}")
     public UniPutResponse updateuni(@PathVariable(name="id") int id, @RequestBody UniPutRequest uniPutRequest){
         return uniService.updateuni(id,uniPutRequest);
     }
 
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/universites/{id}")
     public void deleteuni(@PathVariable(name="id") int id){
         uniService.deleteuni(id);
     }
