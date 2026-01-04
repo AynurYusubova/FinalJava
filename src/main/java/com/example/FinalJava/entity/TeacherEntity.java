@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -21,10 +24,14 @@ public class TeacherEntity {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
+
+    @NotBlank(message = "Name boş ola bilməz")
+    @Size(max = 100, message = "Name 100 simvoldan çox ola bilməz")
     @Column(name="name",nullable=false,length=100)
     private String name;
 
-
+    @NotBlank(message = "Surname boş ola bilməz")
+    @Size(max = 100, message = "Surname 100 simvoldan çox ola bilməz")
     @Column(name = "surname",nullable=false,length=100)
     private String surname;
 

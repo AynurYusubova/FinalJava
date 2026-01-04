@@ -7,6 +7,7 @@ import com.example.FinalJava.dto.res.StudentGetResponse;
 import com.example.FinalJava.dto.res.StudentPostResponse;
 import com.example.FinalJava.dto.res.StudentPutResponse;
 import com.example.FinalJava.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,12 +34,12 @@ public class StudentController {
     }
 
     @PostMapping("/students")
-    public StudentPostResponse addStudent(@RequestBody StudentPostRequest studentPostRequest){
+    public StudentPostResponse addStudent(@Valid @RequestBody StudentPostRequest studentPostRequest){
         return studentService.addStudent(studentPostRequest);
     }
 
     @PutMapping("/students/{id}")
-    public StudentPutResponse updateStudent(@PathVariable(name="id") int id, @RequestBody StudentPutRequest studentPutRequest){
+    public StudentPutResponse updateStudent(@PathVariable(name="id") int id,@Valid @RequestBody StudentPutRequest studentPutRequest){
         return studentService.updateStudent(id,studentPutRequest);
     }
 

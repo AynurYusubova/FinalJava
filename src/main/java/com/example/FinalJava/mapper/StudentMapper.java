@@ -20,7 +20,5 @@ public interface StudentMapper {
     StudentPostResponse toPostResponse(UniEntity uni);
 
     StudentPutResponse toPutResponse(StudentEntity entity);
-
-
 }
 

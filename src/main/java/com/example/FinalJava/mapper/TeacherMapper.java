@@ -2,7 +2,9 @@ package com.example.FinalJava.mapper;
 
 import com.example.FinalJava.dto.res.TeacherAllResponse;
 import com.example.FinalJava.dto.res.TeacherGetResponse;
+import com.example.FinalJava.dto.res.TeacherPostResponse;
 import com.example.FinalJava.dto.res.TeacherPutResponse;
+import com.example.FinalJava.entity.SubjectEntity;
 import com.example.FinalJava.entity.TeacherEntity;
 import org.mapstruct.Mapper;
 

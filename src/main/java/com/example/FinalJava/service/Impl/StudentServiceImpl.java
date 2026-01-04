@@ -12,12 +12,11 @@ import com.example.FinalJava.mapper.StudentMapper;
 import com.example.FinalJava.repostory.StudentRepostory;
 import com.example.FinalJava.repostory.UniRepostory;
 import com.example.FinalJava.service.StudentService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
-
-
 
 
 @Service
@@ -66,27 +65,38 @@ public class StudentServiceImpl implements StudentService {
         return response1;
     }
 
-
+    @Transactional
     @Override
     public StudentPutResponse updateStudent(int id, StudentPutRequest studentPutRequest) {
         StudentEntity entity = studentRepostory.findById(id)
                 .orElseThrow(()-> new NotFoundException("Məlumat tapılmadı!"));
 
-                StudentPutResponse response2=studentMapper.toPutResponse(entity);
-                response2.setMessage("Məlumat uğurla dəyişdirildi!");
+                entity.setName(studentPutRequest.getName());
+                entity.setSurname(studentPutRequest.getSurname());
+                entity.setEmail(studentPutRequest.getEmail());
+                entity.setBirthday(studentPutRequest.getBirthday());
+                entity.setCourse(studentPutRequest.getCourse());
+                entity.setAnnualFree(studentPutRequest.getAnnualFree());
 
+                StudentPutResponse response2=new StudentPutResponse();
+                response2.setName(entity.getName());
+                response2.setSurname(entity.getSurname());
+                response2.setEmail(entity.getEmail());
+                response2.setBirthday(entity.getBirthday());
+                response2.setCourse(entity.getCourse());
+                response2.setAnnualFree(entity.getAnnualFree());
+                response2.setMessage("Məlumat uğurla dəyişdirildi!");
                 return response2;
     }
 
+    @Transactional
     @Override
     public void deleteStudent(int id) {
-        Optional<StudentEntity> student = studentRepostory.findById(id);
-        if(student.isEmpty()){
-              log.info("ID" + id + " üçün tələbə tapılmadı!" );
-            return;
-        }
-        log.info("ID " + id + "məlumat silindi!" );
-        studentRepostory.delete(student.get());
+        StudentEntity studentEntity = studentRepostory.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "ID " + id + " üçün tələbə tapılmadı!"
+                ));
+        studentRepostory.delete(studentEntity);
+        log.info("ID " + id + " məlumat silindi!");
     }
-
 }

@@ -7,8 +7,8 @@ import com.example.FinalJava.dto.res.UniGetResponse;
 import com.example.FinalJava.dto.res.UniPostResponse;
 import com.example.FinalJava.dto.res.UniPutResponse;
 
-import java.util.List;
 
+import java.util.List;
 public interface UniService {
     List<UniAllResponse> getAlluni();
 

@@ -15,7 +15,6 @@ import com.example.FinalJava.service.Impl.StudentServiceImpl;
 import com.example.FinalJava.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -80,8 +79,7 @@ public class StudentServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        List <StudentAllResponse> studentAllResponse =MockData.studentAllResponse();
+        studentAllResponse =MockData.studentAllResponse();
         studentEntities =MockData.studentEntities();
         entity =MockData.entity();
         response =MockData.response();
@@ -152,7 +150,7 @@ public class StudentServiceImplTest {
     @Test
     void whenDeleteStudent(){
         int id=1;
-        when(studentRepostory.findById(id)).thenReturn(Optional.of(entity));
+        when(studentRepostory.findById(1)).thenReturn(Optional.of(entity));
 
         studentService.deleteStudent(id);
 

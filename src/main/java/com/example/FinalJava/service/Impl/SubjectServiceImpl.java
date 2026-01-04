@@ -7,11 +7,13 @@ import com.example.FinalJava.dto.res.SubjectPostResponse;
 import com.example.FinalJava.dto.res.SubjectPutResponse;
 import com.example.FinalJava.entity.SubjectEntity;
 import com.example.FinalJava.entity.TeacherEntity;
+import com.example.FinalJava.exception.EntityNotFoundException;
 import com.example.FinalJava.exception.NotFoundException;
 import com.example.FinalJava.mapper.SubjectMapper;
 import com.example.FinalJava.repostory.SubjectRepostory;
 import com.example.FinalJava.repostory.TeacherRepostory;
 import com.example.FinalJava.service.SubjectService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public SubjectGetResponse getSubject(int id) {
         SubjectEntity entity=subjectRepostory.findById(id)
-                .orElseThrow(()->new NotFoundException("Fənn tapılmadı!"));
+                .orElseThrow(()->new NotFoundException("Məlumat tapılmadı!"));
 
          SubjectGetResponse response=subjectMapper.toGetResponse(entity);
          response.setMessage("Id " + id + "məlumat tapıldı!");
@@ -61,26 +63,33 @@ public class SubjectServiceImpl implements SubjectService {
 
     }
 
+    @Transactional
     @Override
     public SubjectPutResponse updateSubject(int id, SubjectPutRequest subjectPutRequest) {
         SubjectEntity entity=subjectRepostory.findById(id)
-                .orElseThrow(()->new NotFoundException("Məlumat tapılmadı!"));
+                 .orElseThrow(()->new NotFoundException("Məlumat tapılmadı!"));
 
+        entity.setName(subjectPutRequest.getName());
+        entity.setCredits(subjectPutRequest.getCredits());
 
-        SubjectPutResponse response=subjectMapper.toPutResponse(entity);
+        SubjectPutResponse response=new SubjectPutResponse();
+        response.setName(entity.getName());
+        response.setCredits(entity.getCredits());
         response.setMessage("Məlumat uğurla dəyişdirildi!");
 
         return response;
     }
 
+
+    @Transactional
     @Override
     public void deleteSubject(int id) {
-        Optional<SubjectEntity> subject = subjectRepostory.findById(id);
-        if(subject.isEmpty()){
-            System.out.println("ID " + id + " üçün fənn tapılmadı!");
-            return;
-        }
-        System.out.println("ID " + id + "məlumat silindi!" );
-        subjectRepostory.delete(subject.get());
+        SubjectEntity subjectEntity = subjectRepostory.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "ID " + id + " üçün fənn tapılmadı!"
+                ));
+        subjectRepostory.delete(subjectEntity);
+        System.out.println("ID " + id + " məlumat silindi!");
     }
+
 }

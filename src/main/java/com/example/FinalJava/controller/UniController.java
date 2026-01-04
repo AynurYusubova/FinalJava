@@ -6,6 +6,7 @@ import com.example.FinalJava.dto.res.UniGetResponse;
 import com.example.FinalJava.dto.res.UniPostResponse;
 import com.example.FinalJava.dto.res.UniPutResponse;
 import com.example.FinalJava.service.UniService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -32,12 +33,12 @@ public class UniController {
     }
 
     @PostMapping("/universites")
-    public UniPostResponse adduni(@RequestBody UniPostRequest uniPostRequest){
+    public UniPostResponse adduni(@Valid @RequestBody UniPostRequest uniPostRequest){
         return uniService.adduni(uniPostRequest);
     }
 
     @PutMapping("/universites/{id}")
-    public UniPutResponse updateuni(@PathVariable(name="id") int id, @RequestBody UniPutRequest uniPutRequest){
+    public UniPutResponse updateuni( @PathVariable(name="id") int id,@Valid @RequestBody UniPutRequest uniPutRequest){
         return uniService.updateuni(id,uniPutRequest);
     }
 

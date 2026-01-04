@@ -8,6 +8,7 @@ import com.example.FinalJava.dto.res.SubjectGetResponse;
 import com.example.FinalJava.dto.res.SubjectPostResponse;
 import com.example.FinalJava.dto.res.SubjectPutResponse;
 import com.example.FinalJava.service.SubjectService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,12 +39,12 @@ public class SubjectController {
     }
 
     @PostMapping("/subjects")
-    public SubjectPostResponse addSubject(@RequestBody SubjectPostRequest subjectPostRequest) {
+    public SubjectPostResponse addSubject(@Valid @RequestBody SubjectPostRequest subjectPostRequest) {
         return subjectService.addSubject(subjectPostRequest);
     }
 
     @PutMapping("/subjects/{id}")
-    public SubjectPutResponse updateSubject(@PathVariable(name="id") int id,@RequestBody SubjectPutRequest subjectPutRequest) {
+    public SubjectPutResponse updateSubject(@PathVariable(name="id") int id,@Valid @RequestBody SubjectPutRequest subjectPutRequest) {
          return subjectService.updateSubject(id, subjectPutRequest);
     }
 

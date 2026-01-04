@@ -1,11 +1,9 @@
 package com.example.FinalJava.service.impl;
-import com.example.FinalJava.dto.req.StudentPostRequest;
-import com.example.FinalJava.dto.req.StudentPutRequest;
-import com.example.FinalJava.dto.res.StudentAllResponse;
-import com.example.FinalJava.dto.res.StudentGetResponse;
-import com.example.FinalJava.dto.res.StudentPostResponse;
-import com.example.FinalJava.dto.res.StudentPutResponse;
+import com.example.FinalJava.dto.req.*;
+import com.example.FinalJava.dto.res.*;
 import com.example.FinalJava.entity.StudentEntity;
+import com.example.FinalJava.entity.SubjectEntity;
+import com.example.FinalJava.entity.TeacherEntity;
 import com.example.FinalJava.entity.UniEntity;
 
 
@@ -171,5 +169,167 @@ public class MockData {
                 .annualFree(0)
                 .build();
     }
+
+    public static List <SubjectAllResponse> subjectAllResponse(){
+        return Arrays.asList(
+                new SubjectAllResponse(1,"Riyaziyyat",5),
+                new SubjectAllResponse(2,"Az-dili",5)
+        );
+    }
+
+
+    public static TeacherEntity teacherEntity(){
+        return TeacherEntity.builder()
+                .id(1)
+                .name("Servan")
+                .surname("Eziz")
+                .build();
+    }
+
+    public static List <SubjectEntity> subjectEntities(){
+        return Arrays.asList(
+                new SubjectEntity(1,"Az-dili",7,teacherEntity())
+        );
+    }
+
+    public static SubjectEntity subject(){
+        return SubjectEntity.builder()
+                .id(1)
+                .name("Azdili")
+                .credits(5)
+                .teacher(teacherEntity())
+                .build();
+    }
+
+
+    public static SubjectGetResponse subjectResponse(){
+        return SubjectGetResponse.builder()
+                .name("Azdili")
+                .credits(7)
+                .message("Message")
+                .build();
+    }
+
+    public static SubjectPostRequest subjectPostRequest(){
+        return SubjectPostRequest.builder()
+                .name("Azdili")
+                .credits(7)
+                .teacherId(2)
+                .build();
+    }
+
+    public static SubjectPostResponse subjectPostResponse(){
+        return SubjectPostResponse.builder()
+                .name("Azdili")
+                .credits(7)
+                .message("Message")
+                .build();
+    }
+
+
+    public static SubjectPutRequest subjectPutRequest(){
+        return SubjectPutRequest.builder()
+                .name("Azdili")
+                .credits(7)
+                .build();
+    }
+
+    public static SubjectPutResponse subjectPutResponse(){
+        return SubjectPutResponse.builder()
+                .name("Azdili")
+                .credits(7)
+                .message("Message")
+                .build();
+    }
+
+
+    public static List <TeacherAllResponse> teacherAllResponse(){
+        return Arrays.asList(
+                new TeacherAllResponse(1,"Elnur","Aliyev")
+        );
+    }
+
+    public static List <TeacherEntity> teacherEntities(){
+        return Arrays.asList(
+                new TeacherEntity(1,"Elnur","Aliyev",subjectEntities())
+        );
+    }
+
+   public static TeacherGetResponse teacherGetResponse(){
+        return TeacherGetResponse.builder()
+                .name("Lale")
+                .surname("Aliyev")
+                .message("Message")
+                .build();
+   }
+
+   public static TeacherPostResponse teacherPostResponse(){
+        return TeacherPostResponse.builder()
+                .name("Araz")
+                .surname("Aliyev")
+                .message("Message")
+                .build();
+   }
+
+   public static TeacherPostRequest teacherPostRequest(){
+        return TeacherPostRequest.builder()
+                .name("Araz")
+                .surname("Aliyev")
+                .build();
+   }
+
+   public static TeacherPutResponse teacherPutResponse(){
+        return TeacherPutResponse.builder()
+                .name("Araz")
+                .surname("Aliyev")
+                .message("Message")
+                .build();
+   }
+
+
+   public static List <UniAllResponse> uniAllResponse(){
+        return Arrays.asList(
+                new UniAllResponse(1,"BDU","IT")
+        );
+   }
+
+   public static List <UniEntity> uniEntities(){
+        return Arrays.asList(
+                new UniEntity(1,"BDU","IT",studentEntities())
+        );
+   }
+
+
+   public static UniGetResponse uniGetResponse(){
+        return UniGetResponse.builder()
+                .name("BDU")
+                .faculty("IT")
+                .message("message")
+                .build();
+   }
+
+   public static UniPutResponse uniPutResponse(){
+        return UniPutResponse.builder()
+                .name("BDU")
+                .faculty("IT")
+                .message("message")
+                .build();
+
+   }
+
+   public static UniPutRequest uniPutRequest(){
+        return UniPutRequest.builder()
+                .name("BDU")
+                .faculty("IT")
+                .build();
+   }
+
+
+   public static UniPostRequest  uniPostRequest(){
+        return UniPostRequest.builder()
+                .name("BDU")
+                .faculty("IT")
+                .build();
+   }
 
 }

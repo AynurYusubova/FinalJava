@@ -4,16 +4,17 @@ import com.example.FinalJava.dto.req.TeacherPostRequest;
 import com.example.FinalJava.dto.req.TeacherPutRequest;
 import com.example.FinalJava.dto.res.*;
 import com.example.FinalJava.entity.TeacherEntity;
+import com.example.FinalJava.exception.EntityNotFoundException;
 import com.example.FinalJava.exception.NotFoundException;
 import com.example.FinalJava.mapper.TeacherMapper;
 import com.example.FinalJava.repostory.TeacherRepostory;
 import com.example.FinalJava.service.TeacherService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Service
@@ -23,9 +24,11 @@ public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepostory teacherRepostory;
     private final TeacherMapper teacherMapper;
 
+
     public TeacherServiceImpl(TeacherRepostory teacherRepostory, TeacherMapper teacherMapper) {
         this.teacherRepostory = teacherRepostory;
         this.teacherMapper = teacherMapper;
+
     }
 
     @Override
@@ -40,7 +43,7 @@ public class TeacherServiceImpl implements TeacherService {
                 .orElseThrow(()->new NotFoundException("Müəllim tapılmadı!"));
 
         TeacherGetResponse response=teacherMapper.toGetResponse(entity);
-        response.setMessage("ID " + id + " üçün müəllim tapılmadı!");
+        response.setMessage("ID " + id + " üçün müəllim tapıldı!");
         return response;
 
       }
@@ -56,30 +59,37 @@ public class TeacherServiceImpl implements TeacherService {
                 .surname(teacherEntity.getSurname())
                 .message("Məlumat uğurla əlavə olundu!")
                 .build();
+
     }
 
+    @Transactional
     @Override
     public TeacherPutResponse putTeacher(int id, TeacherPutRequest teacherPutRequest) {
         TeacherEntity entity = teacherRepostory.findById(id)
                 .orElseThrow(()->new NotFoundException("Məlumat tapılmadı!"));
 
-        TeacherPutResponse response=teacherMapper.toPutResponse(entity);
+        entity.setName(teacherPutRequest.getName());
+        entity.setSurname(teacherPutRequest.getSurname());
+        teacherRepostory.save(entity);
+
+        TeacherPutResponse response=new TeacherPutResponse();
+        response.setName(entity.getName());
+        response.setSurname(entity.getSurname());
         response.setMessage("Məlumat uğurla dəyişdirildi!");
 
         return response;
     }
 
+    @Transactional
     @Override
     public void deleteTeacher(int id) {
-        Optional<TeacherEntity> teacher = teacherRepostory.findById(id);
-        if(teacher.isEmpty()){
-            System.out.println("ID " + id + " üçün müəllim tapılmadı!");
-            return;
-        }
-        System.out.println("ID " + id + "məlumat silindi!" );
-        teacherRepostory.delete(teacher.get());
+        TeacherEntity teacherEntity = teacherRepostory.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "ID " + id + " üçün müəllim tapılmadı!"
+                ));
+        teacherRepostory.delete(teacherEntity);
+        System.out.println("ID " + id + " məlumat silindi!");
     }
-
 
 }
 
